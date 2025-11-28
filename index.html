@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#9333EA">
     <title>Welcome Home</title>
     <style>
         * {
@@ -11,14 +15,27 @@
             box-sizing: border-box;
         }
 
+        html {
+            height: 100%;
+            width: 100%;
+            position: fixed;
+            overflow: hidden;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #9333EA 0%, #3B82F6 100%);
             min-height: 100vh;
+            min-height: -webkit-fill-available;
+            height: 100%;
+            width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
 
         /* Welcome Screen */
@@ -402,16 +419,16 @@
             <h2 class="modal-title">Reasons I missed you</h2>
             <div class="duration" id="duration-counter"></div>
             <ul class="reasons-list" id="reasons-list">
-                <li class="reason-item">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
-                <li class="reason-item">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</li>
-                <li class="reason-item">Ut enim ad minim veniam, quis nostrud exercitation ullamco.</li>
-                <li class="reason-item">Duis aute irure dolor in reprehenderit in voluptate velit.</li>
-                <li class="reason-item">Excepteur sint occaecat cupidatat non proident sunt in culpa.</li>
-                <li class="reason-item">Sed ut perspiciatis unde omnis iste natus error sit voluptatem.</li>
-                <li class="reason-item">Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut.</li>
-                <li class="reason-item">Neque porro quisquam est qui dolorem ipsum quia dolor sit.</li>
-                <li class="reason-item">Quis autem vel eum iure reprehenderit qui in ea voluptate.</li>
-                <li class="reason-item">At vero eos et accusamus et iusto odio dignissimos ducimus.</li>
+                <li class="reason-item">I miss how tight you snuggle up to me while we're watching Neebs, like you're trying to get as close as physically possible.</li>
+                <li class="reason-item">I miss you always introducing me to weird and wonderful things I would never have found on my own - you expand my world in the best ways.</li>
+                <li class="reason-item">I miss how you snuggle up in my arms at night, fitting perfectly like that's exactly where you belong.</li>
+                <li class="reason-item">I miss your enthusiasm for EVERYTHING - your passion is infectious and makes me want to be more like you.</li>
+                <li class="reason-item">I miss your awesome shirts and the way you wear them.</li>
+                <li class="reason-item">I miss cooking with you and joking about the tablespoons - even the simplest things are better with you.</li>
+                <li class="reason-item">I miss how easily you impress Juané (she missed you too by the way, and asked on Tuesday night if you're coming over).</li>
+                <li class="reason-item">I miss holding your hand - it just always makes me feel wanted and safe.</li>
+                <li class="reason-item">I miss our bedroom fun... need I say more!!!</li>
+                <li class="reason-item">I missed you.</li>
             </ul>
         </div>
     </div>
@@ -478,11 +495,20 @@ body {
 
         // Console Easter Eggs
         console.log(`
-   ♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥
-  ♥               ♥
- ♥  Welcome Home  ♥
-  ♥               ♥
-   ♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥
+      /\\_/\\
+     ( o.o )
+      > ^ 
+     /|   |\\
+    (_|   |_)
+   
+ ╔══════════════╗
+ ║ WELCOME HOME ║
+ ╚══════════════╝
+    |       |
+   /|\\_____/|\\
+  / |       | \\
+ |  |       |  |
+ |__|       |__|
 `);
 
         console.log("💭 Fun fact: In F1, the fastest pit stop record is 1.82 seconds. Still slower than how fast I missed you.");
