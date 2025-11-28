@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #9333EA 0%, #3B82F6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Welcome Screen */
+        #welcome-screen {
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        #welcome-screen.hidden {
+            display: none;
+        }
+
+        .welcome-title {
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 700;
+            color: white;
+            margin-bottom: 3rem;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+        }
+
+        .arrived-button {
+            padding: 1.5rem 4rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            border-radius: 16px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            min-width: 200px;
+            min-height: 44px;
+        }
+
+        .arrived-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .arrived-button:active {
+            transform: scale(1.05);
+        }
+
+        /* Terminal Screen */
+        #terminal-screen {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        #terminal-screen.active {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .terminal {
+            background: #1E1E1E;
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'Courier New', monospace;
+            color: #4AF626;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        #main-terminal {
+            flex: 2;
+            max-width: 600px;
+            font-size: 1.1rem;
+        }
+
+        #side-terminal {
+            flex: 1;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow: hidden;
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .terminal-header {
+            color: #888;
+            margin-bottom: 1rem;
+            font-size: 0.9em;
+        }
+
+        .terminal-line {
+            margin: 0.5rem 0;
+            opacity: 0;
+            animation: fadeInLine 0.3s ease-out forwards;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background: #4AF626;
+            animation: blink 1s infinite;
+            vertical-align: text-bottom;
+        }
+
+        .spinner {
+            display: inline-block;
+            animation: spin 0.5s linear infinite;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4AF626, #00FF00);
+            width: 0%;
+            animation: progress 4.5s ease-out forwards;
+        }
+
+        .css-content {
+            white-space: pre-wrap;
+            word-break: break-all;
+            line-height: 1.4;
+            animation: scrollCode 30s linear infinite;
+        }
+
+        .warn {
+            color: #FFA500;
+        }
+
+        .success {
+            color: #4AF626;
+        }
+
+        /* Modal */
+        #reasons-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #reasons-modal.active {
+            display: flex;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.95), rgba(59, 130, 246, 0.95));
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideUp 0.5s ease-out;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid white;
+            color: white;
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .modal-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .duration {
+            text-align: center;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            line-height: 1.8;
+        }
+
+        .duration-label {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .duration-time {
+            display: block;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .reasons-list {
+            list-style: none;
+        }
+
+        .reason-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem 1.5rem;
+            margin: 0.5rem 0;
+            border-radius: 12px;
+            color: white;
+            border-left: 4px solid rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .reason-item:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-left-color: rgba(255, 255, 255, 0.9);
+            transform: translateX(8px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Custom Scrollbar */
+        .modal-content::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #9333EA, #3B82F6);
+            border-radius: 10px;
+            border: 2px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #a855f7, #60a5fa);
+        }
+
+        /* Firefox scrollbar */
+        .modal-content {
+            scrollbar-width: thin;
+            scrollbar-color: #9333EA rgba(0, 0, 0, 0.2);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInLine {
+            to { opacity: 1; }
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes progress {
+            to { width: 100%; }
+        }
+
+        @keyframes scrollCode {
+            from { transform: translateY(0); }
+            to { transform: translateY(-50%); }
+        }
+
+        @keyframes reasonFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            #terminal-screen.active {
+                flex-direction: column;
+                overflow-y: auto;
+            }
+
+            #main-terminal, #side-terminal {
+                max-width: 100%;
+                width: 100%;
+            }
+
+            #side-terminal {
+                max-height: 300px;
+            }
+
+            .modal-content {
+                padding: 2rem 1.5rem;
+            }
+
+            .modal-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div id="welcome-screen">
+        <h1 class="welcome-title">Welcome Sadrienne</h1>
+        <button class="arrived-button" id="arrived-btn">Arrived</button>
+    </div>
+
+    <!-- Terminal Screen -->
+    <div id="terminal-screen">
+        <div id="main-terminal" class="terminal">
+            <div id="terminal-output"></div>
+        </div>
+        <div id="side-terminal" class="terminal">
+            <div class="terminal-header">$ cat gremlin-project/styles.css</div>
+            <div class="css-content" id="css-output"></div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="reasons-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="close-modal-btn">[X]</button>
+            <h2 class="modal-title">Reasons I missed you</h2>
+            <div class="duration" id="duration-counter"></div>
+            <ul class="reasons-list" id="reasons-list">
+                <li class="reason-item">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+                <li class="reason-item">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</li>
+                <li class="reason-item">Ut enim ad minim veniam, quis nostrud exercitation ullamco.</li>
+                <li class="reason-item">Duis aute irure dolor in reprehenderit in voluptate velit.</li>
+                <li class="reason-item">Excepteur sint occaecat cupidatat non proident sunt in culpa.</li>
+                <li class="reason-item">Sed ut perspiciatis unde omnis iste natus error sit voluptatem.</li>
+                <li class="reason-item">Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut.</li>
+                <li class="reason-item">Neque porro quisquam est qui dolorem ipsum quia dolor sit.</li>
+                <li class="reason-item">Quis autem vel eum iure reprehenderit qui in ea voluptate.</li>
+                <li class="reason-item">At vero eos et accusamus et iusto odio dignissimos ducimus.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Constants
+        const DEPARTURE_TIME = new Date('2025-11-24T12:55:00');
+
+        // CSS content from gremlin-project
+        const CSS_CONTENT = `* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --base-dark: #2b3137;
+    --teal-primary: #00d4aa;
+    --teal-secondary: #00a896;
+    --purple-primary: #9d4edd;
+    --purple-secondary: #7b2cbf;
+    --bg-dark: #1a1d23;
+    --text-light: #ffffff;
+    --text-muted: #a0a4a8;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-light);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    padding-top: 80px;
+}
+
+.background-gradient {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(157, 78, 221, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 212, 170, 0.15) 0%, transparent 50%),
+        linear-gradient(135deg, var(--bg-dark) 0%, var(--base-dark) 100%);
+    z-index: -1;
+}
+
+/* Navigation */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(26, 29, 35, 0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1000;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* ... rest of CSS continues ... */`;
+
+        // Console Easter Eggs
+        console.log(`
+   ♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥
+  ♥               ♥
+ ♥  Welcome Home  ♥
+  ♥               ♥
+   ♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥
+`);
+
+        console.log("💭 Fun fact: In F1, the fastest pit stop record is 1.82 seconds. Still slower than how fast I missed you.");
+        console.log("⚠️ Warning: undefined is not a function... but you are definitely the one ✨");
+        console.log("🏎️ DRS activated: Distance Reduction System engaged");
+        console.log("const love = true; // This variable is immutable");
+        console.log("🔧 Debug: Checking girlfriend.status... ✓ PERFECT");
+
+        // Terminal sequence
+        const terminalSequence = [
+            { delay: 0, html: '$ node Girlfriend.js<span class="cursor"></span>' },
+            { delay: 800, html: '<span class="warn">npm WARN deprecated loneliness@1.0.0</span>' },
+            { delay: 1600, html: '<span class="warn">npm WARN Missing her protocol engaged</span>' },
+            { delay: 2400, html: '<span class="spinner">⠋</span> installing dependencies...' },
+            { delay: 3200, html: '<span class="spinner">⠙</span> installing dependencies...' },
+            { delay: 4000, html: '<span class="warn">WARN: Heart rate elevated</span>' },
+            { delay: 4800, html: '<span class="spinner">⠹</span> Loading memories.json' },
+            { delay: 5600, html: '<span class="spinner">⠸</span> Initializing hugs.exe' },
+            { delay: 6400, html: '<span class="spinner">⠼</span> Compiling kisses.js...' },
+            { delay: 7200, html: '<span class="success">✓ Compiled successfully in 4269ms</span>' }
+        ];
+
+        function startSequence() {
+            // Update title
+            document.title = 'npm install girlfriend...';
+
+            // Hide welcome screen
+            document.getElementById('welcome-screen').classList.add('hidden');
+
+            // Show terminal screen
+            document.getElementById('terminal-screen').classList.add('active');
+
+            // Start CSS scrolling
+            document.getElementById('css-output').textContent = CSS_CONTENT + '\n\n' + CSS_CONTENT;
+
+            // Run terminal sequence
+            const output = document.getElementById('terminal-output');
+            terminalSequence.forEach((item, index) => {
+                setTimeout(() => {
+                    const line = document.createElement('div');
+                    line.className = 'terminal-line';
+                    line.innerHTML = item.html;
+                    line.style.animationDelay = '0s';
+                    output.appendChild(line);
+                }, item.delay);
+            });
+
+            // Show modal after 8 seconds
+            setTimeout(() => {
+                document.title = 'Deployment successful ✓';
+                showModal();
+            }, 8000);
+        }
+
+        function calculateDuration() {
+            const now = new Date();
+            const diff = now - DEPARTURE_TIME;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+            return `<span class="duration-label">You were away for:</span><span class="duration-time">${days} days, ${hours} hours, ${minutes} minutes</span>`;
+        }
+
+        function showModal() {
+            const modal = document.getElementById('reasons-modal');
+            modal.classList.add('active');
+
+            // Update duration
+            document.getElementById('duration-counter').innerHTML = calculateDuration();
+
+            // Animate reasons
+            const reasons = document.querySelectorAll('.reason-item');
+            reasons.forEach((reason, index) => {
+                setTimeout(() => {
+                    reason.style.animation = 'reasonFadeIn 0.5s ease-out forwards';
+                }, index * 100);
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('reasons-modal').classList.remove('active');
+        }
+
+        // Attach event listeners when DOM is ready
+        document.getElementById('arrived-btn').addEventListener('click', startSequence);
+        document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+    </script>
+</body>
+</html>
